@@ -1,13 +1,13 @@
 """Signal manager - handles signal lifecycle and execution."""
 
 import logging
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Optional, Callable, Awaitable
 from enum import Enum
 
-from ..strategies.base import Signal, Side, SignalType
 from ..exchange.base import Exchange, Order, OrderSide, OrderType
+from ..strategies.base import Side, Signal
 
 logger = logging.getLogger(__name__)
 
@@ -26,12 +26,12 @@ class ManagedSignal:
     """Signal with management metadata."""
     signal: Signal
     state: SignalState = SignalState.PENDING
-    entry_order: Optional[Order] = None
-    stop_order: Optional[Order] = None
-    take_profit_order: Optional[Order] = None
+    entry_order: Order | None = None
+    stop_order: Order | None = None
+    take_profit_order: Order | None = None
     created_at: datetime = field(default_factory=datetime.now)
-    executed_at: Optional[datetime] = None
-    expiry: Optional[datetime] = None
+    executed_at: datetime | None = None
+    expiry: datetime | None = None
 
     @property
     def is_active(self) -> bool:
@@ -53,7 +53,7 @@ class SignalManager:
     - Stop loss and take profit orders
     """
 
-    def __init__(self, exchange: Optional[Exchange] = None,
+    def __init__(self, exchange: Exchange | None = None,
                  signal_expiry_minutes: int = 60,
                  auto_execute: bool = False):
         """Initialize signal manager.

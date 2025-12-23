@@ -154,7 +154,7 @@ class SignalGenerator:
 
         return exit_signals
 
-    def get_last_signal(self, symbol: str) -> Optional[Signal]:
+    def get_last_signal(self, symbol: str) -> Signal | None:
         """Get last generated signal for a symbol."""
         return self._last_signals.get(symbol)
 
