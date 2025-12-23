@@ -1,9 +1,9 @@
 """Technical analysis indicators module."""
 
-from .trend import SMA, EMA, MACD, ADX
-from .momentum import RSI, StochasticRSI, CCI, WilliamsR
-from .volatility import BollingerBands, ATR, KeltnerChannels
-from .volume import OBV, VWAP, MFI
+from .momentum import CCI, RSI, StochasticRSI, WilliamsR
+from .trend import ADX, EMA, MACD, SMA
+from .volatility import ATR, BollingerBands, KeltnerChannels
+from .volume import MFI, OBV, VWAP
 
 __all__ = [
     "SMA", "EMA", "MACD", "ADX",

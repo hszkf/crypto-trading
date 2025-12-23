@@ -1,15 +1,18 @@
 """CCXT-based exchange client implementation."""
 
-import asyncio
 import logging
-from typing import Optional
 from datetime import datetime
 
 import pandas as pd
 
 from .base import (
-    Exchange, Order, Position, Balance,
-    OrderType, OrderSide, OrderStatus
+    Balance,
+    Exchange,
+    Order,
+    OrderSide,
+    OrderStatus,
+    OrderType,
+    Position,
 )
 
 logger = logging.getLogger(__name__)
@@ -108,7 +111,7 @@ class ExchangeClient(Exchange):
             locked=float(currency_balance.get("used", 0))
         )
 
-    async def get_positions(self, symbol: Optional[str] = None) -> list[Position]:
+    async def get_positions(self, symbol: str | None = None) -> list[Position]:
         """Get open positions."""
         self._ensure_connected()
 
@@ -135,7 +138,7 @@ class ExchangeClient(Exchange):
 
         return result
 
-    async def get_open_orders(self, symbol: Optional[str] = None) -> list[Order]:
+    async def get_open_orders(self, symbol: str | None = None) -> list[Order]:
         """Get open orders."""
         self._ensure_connected()
 
@@ -143,8 +146,8 @@ class ExchangeClient(Exchange):
         return [self._parse_order(o) for o in orders]
 
     async def place_order(self, symbol: str, side: OrderSide, order_type: OrderType,
-                          quantity: float, price: Optional[float] = None,
-                          stop_price: Optional[float] = None) -> Order:
+                          quantity: float, price: float | None = None,
+                          stop_price: float | None = None) -> Order:
         """Place an order."""
         self._ensure_connected()
 
@@ -184,7 +187,7 @@ class ExchangeClient(Exchange):
             logger.error(f"Failed to cancel order {order_id}: {e}")
             return False
 
-    async def cancel_all_orders(self, symbol: Optional[str] = None) -> int:
+    async def cancel_all_orders(self, symbol: str | None = None) -> int:
         """Cancel all orders."""
         self._ensure_connected()
 

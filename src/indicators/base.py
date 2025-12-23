@@ -1,10 +1,9 @@
 """Base class for technical indicators."""
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 class Indicator(ABC):
