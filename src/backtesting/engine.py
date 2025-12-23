@@ -3,12 +3,10 @@
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional, Callable
 
 import pandas as pd
-import numpy as np
 
-from ..strategies.base import Strategy, Signal, Side, SignalType
+from ..strategies.base import Side, Strategy
 from .metrics import PerformanceMetrics, calculate_metrics
 
 logger = logging.getLogger(__name__)
@@ -43,8 +41,8 @@ class Position:
     entry_time: datetime
     entry_price: float
     quantity: float
-    stop_loss: Optional[float] = None
-    take_profit: Optional[float] = None
+    stop_loss: float | None = None
+    take_profit: float | None = None
     metadata: dict = field(default_factory=dict)
 
 
@@ -88,7 +86,7 @@ class BacktestEngine:
         self.risk_per_trade = risk_per_trade
 
         self._capital = initial_capital
-        self._position: Optional[Position] = None
+        self._position: Position | None = None
         self._trades: list[Trade] = []
         self._equity_curve: list[float] = []
 
@@ -324,7 +322,7 @@ class BacktestEngine:
         values = param_grid.values()
 
         for combo in itertools.product(*values):
-            params = dict(zip(keys, combo))
+            params = dict(zip(keys, combo, strict=True))
 
             try:
                 strategy = strategy_class(**params)
