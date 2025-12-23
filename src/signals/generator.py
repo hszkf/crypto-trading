@@ -1,12 +1,10 @@
 """Signal generator - combines multiple strategies."""
 
 import logging
-from typing import Optional
-from datetime import datetime
 
 import pandas as pd
 
-from ..strategies.base import Strategy, Signal, Side, SignalType
+from ..strategies.base import Side, Signal, Strategy
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +88,7 @@ class SignalGenerator:
 
         # Filter by minimum confluence
         result = []
-        for (symbol, side), group in groups.items():
+        for (_symbol, _side), group in groups.items():
             if len(group) >= self.min_confluence:
                 # Merge signals - use best stop/target
                 merged = self._merge_signals(group)

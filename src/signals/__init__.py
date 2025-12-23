@@ -1,8 +1,8 @@
 """Signal generation and management module."""
 
+from .filters import ConfluenceFilter, SignalFilter, TimeFilter, VolatilityFilter
 from .generator import SignalGenerator
 from .manager import SignalManager
-from .filters import SignalFilter, ConfluenceFilter, TimeFilter, VolatilityFilter
 
 __all__ = [
     "SignalGenerator",

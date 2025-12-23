@@ -1,13 +1,12 @@
 """Signal filters for additional validation."""
 
 from abc import ABC, abstractmethod
-from datetime import datetime, time
-from typing import Optional
+from datetime import datetime
 
 import pandas as pd
 
-from ..strategies.base import Signal, Side
 from ..indicators import ATR, RSI
+from ..strategies.base import Side, Signal
 
 
 class SignalFilter(ABC):
