@@ -1,0 +1,44 @@
+services:
+  # Run the trading system demo
+  trading:
+    build:
+      context: .
+      target: production
+    container_name: crypto-trading
+    env_file:
+      - .env
+    environment:
+      - TRADING_MODE=paper
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  # Run tests
+  test:
+    build:
+      context: .
+      target: test
+    container_name: crypto-trading-test
+    profiles:
+      - test
+
+  # Development environment
+  dev:
+    build:
+      context: .
+      target: development
+    container_name: crypto-trading-dev
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./config:/app/config
+      - ./main.py:/app/main.py
+    env_file:
+      - .env
+    environment:
+      - TRADING_MODE=paper
+      - LOG_LEVEL=DEBUG
+    profiles:
+      - dev
+    command: python main.py
