@@ -1,13 +1,10 @@
 """Backtest reporting and visualization."""
 
-from datetime import datetime
-from typing import Optional
 import json
 
 import pandas as pd
 
-from .engine import BacktestResult, Trade
-from .metrics import PerformanceMetrics
+from .engine import BacktestResult
 
 
 class BacktestReport:

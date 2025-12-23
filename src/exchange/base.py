@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 import pandas as pd
 
@@ -44,8 +43,8 @@ class Order:
     side: OrderSide
     order_type: OrderType
     quantity: float
-    price: Optional[float] = None
-    stop_price: Optional[float] = None
+    price: float | None = None
+    stop_price: float | None = None
     status: OrderStatus = OrderStatus.PENDING
     filled_quantity: float = 0.0
     average_price: float = 0.0
@@ -72,7 +71,7 @@ class Position:
     quantity: float
     entry_price: float
     current_price: float = 0.0
-    liquidation_price: Optional[float] = None
+    liquidation_price: float | None = None
     leverage: float = 1.0
     unrealized_pnl: float = 0.0
     realized_pnl: float = 0.0
@@ -130,19 +129,19 @@ class Exchange(ABC):
         pass
 
     @abstractmethod
-    async def get_positions(self, symbol: Optional[str] = None) -> list[Position]:
+    async def get_positions(self, symbol: str | None = None) -> list[Position]:
         """Get open positions."""
         pass
 
     @abstractmethod
-    async def get_open_orders(self, symbol: Optional[str] = None) -> list[Order]:
+    async def get_open_orders(self, symbol: str | None = None) -> list[Order]:
         """Get open orders."""
         pass
 
     @abstractmethod
     async def place_order(self, symbol: str, side: OrderSide, order_type: OrderType,
-                          quantity: float, price: Optional[float] = None,
-                          stop_price: Optional[float] = None) -> Order:
+                          quantity: float, price: float | None = None,
+                          stop_price: float | None = None) -> Order:
         """Place an order."""
         pass
 
@@ -152,7 +151,7 @@ class Exchange(ABC):
         pass
 
     @abstractmethod
-    async def cancel_all_orders(self, symbol: Optional[str] = None) -> int:
+    async def cancel_all_orders(self, symbol: str | None = None) -> int:
         """Cancel all orders. Returns number cancelled."""
         pass
 

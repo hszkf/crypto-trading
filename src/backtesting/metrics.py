@@ -1,10 +1,9 @@
 """Performance metrics calculation."""
 
 from dataclasses import dataclass
-from typing import Optional
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
 @dataclass
@@ -68,7 +67,6 @@ def calculate_metrics(trades: list, equity_curve: pd.Series,
 
     # Basic trade stats
     pnls = [t.pnl for t in trades]
-    pnl_pcts = [t.pnl_pct for t in trades]
 
     winning = [p for p in pnls if p > 0]
     losing = [p for p in pnls if p < 0]
