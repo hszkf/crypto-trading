@@ -1,9 +1,7 @@
 """Volatility indicators: Bollinger Bands, ATR, Keltner Channels."""
 
-from typing import Tuple
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from .base import VolatilityIndicator
 
@@ -20,7 +18,7 @@ class BollingerBands(VolatilityIndicator):
         self.validate_data(data, ["close"])
         return data["close"].rolling(window=self.period).mean()
 
-    def calculate_all(self, data: pd.DataFrame) -> Tuple[pd.Series, pd.Series, pd.Series]:
+    def calculate_all(self, data: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Series]:
         """Calculate upper, middle, and lower bands.
 
         Returns:
@@ -139,7 +137,7 @@ class KeltnerChannels(VolatilityIndicator):
         self.validate_data(data, ["close"])
         return data["close"].ewm(span=self.period, adjust=False).mean()
 
-    def calculate_all(self, data: pd.DataFrame) -> Tuple[pd.Series, pd.Series, pd.Series]:
+    def calculate_all(self, data: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Series]:
         """Calculate upper, middle, and lower channels.
 
         Returns:

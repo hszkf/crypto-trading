@@ -1,9 +1,7 @@
 """Momentum indicators: RSI, Stochastic RSI, CCI, Williams %R."""
 
-from typing import Tuple
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from .base import MomentumIndicator
 
@@ -78,7 +76,7 @@ class StochasticRSI(MomentumIndicator):
 
         return k
 
-    def calculate_all(self, data: pd.DataFrame) -> Tuple[pd.Series, pd.Series]:
+    def calculate_all(self, data: pd.DataFrame) -> tuple[pd.Series, pd.Series]:
         """Calculate both %K and %D lines.
 
         Returns:

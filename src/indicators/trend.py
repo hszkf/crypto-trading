@@ -1,9 +1,7 @@
 """Trend indicators: SMA, EMA, MACD, ADX."""
 
-from typing import Optional, Tuple
-
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from .base import TrendIndicator
 
@@ -46,7 +44,7 @@ class MACD(TrendIndicator):
         slow_ema = data["close"].ewm(span=self.slow, adjust=False).mean()
         return fast_ema - slow_ema
 
-    def calculate_all(self, data: pd.DataFrame) -> Tuple[pd.Series, pd.Series, pd.Series]:
+    def calculate_all(self, data: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Series]:
         """Calculate MACD line, signal line, and histogram.
 
         Returns:
@@ -107,7 +105,7 @@ class ADX(TrendIndicator):
 
         return adx
 
-    def calculate_all(self, data: pd.DataFrame) -> Tuple[pd.Series, pd.Series, pd.Series]:
+    def calculate_all(self, data: pd.DataFrame) -> tuple[pd.Series, pd.Series, pd.Series]:
         """Calculate ADX, +DI, and -DI.
 
         Returns:
