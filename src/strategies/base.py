@@ -2,9 +2,8 @@
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from enum import Enum
-from typing import Optional
 from datetime import datetime
+from enum import Enum
 
 import pandas as pd
 
@@ -29,13 +28,13 @@ class Signal:
     side: Side
     signal_type: SignalType
     price: float
-    stop_loss: Optional[float] = None
-    take_profit: Optional[float] = None
+    stop_loss: float | None = None
+    take_profit: float | None = None
     confidence: float = 1.0
     metadata: dict = field(default_factory=dict)
 
     @property
-    def risk_reward_ratio(self) -> Optional[float]:
+    def risk_reward_ratio(self) -> float | None:
         """Calculate risk/reward ratio if stop and target are set."""
         if self.stop_loss and self.take_profit:
             risk = abs(self.price - self.stop_loss)
@@ -75,7 +74,7 @@ class Strategy(ABC):
         pass
 
     @abstractmethod
-    def get_entry_signal(self, data: pd.DataFrame) -> Optional[Signal]:
+    def get_entry_signal(self, data: pd.DataFrame) -> Signal | None:
         """Check for entry signal on latest bar.
 
         Args:
@@ -87,7 +86,7 @@ class Strategy(ABC):
         pass
 
     @abstractmethod
-    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Optional[Signal]:
+    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Signal | None:
         """Check for exit signal on latest bar.
 
         Args:

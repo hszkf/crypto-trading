@@ -1,8 +1,8 @@
 """Trading strategies module."""
 
-from .base import Strategy, StrategyResult, Signal, Side, SignalType
-from .ema_crossover import EMACrossoverStrategy
+from .base import Side, Signal, SignalType, Strategy, StrategyResult
 from .bollinger_squeeze import BollingerSqueezeStrategy
+from .ema_crossover import EMACrossoverStrategy
 from .rsi_divergence import RSIDivergenceStrategy
 from .vwap_bounce import VWAPBounceStrategy
 

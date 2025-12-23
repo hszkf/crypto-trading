@@ -1,12 +1,11 @@
 """Bollinger Band Squeeze Breakout Strategy."""
 
-from typing import Optional
 from datetime import datetime
 
 import pandas as pd
 
-from .base import Strategy, StrategyResult, Signal, Side, SignalType
-from ..indicators import BollingerBands, KeltnerChannels, ATR
+from ..indicators import ATR, BollingerBands, KeltnerChannels
+from .base import Side, Signal, SignalType, Strategy, StrategyResult
 
 
 class BollingerSqueezeStrategy(Strategy):
@@ -53,7 +52,7 @@ class BollingerSqueezeStrategy(Strategy):
         bb_upper, bb_middle, bb_lower = self.bb.calculate_all(data)
         squeeze = self._detect_squeeze(data)
         vol_spike = self._volume_spike(data)
-        atr = self.atr.calculate(data)
+        _atr = self.atr.calculate(data)  # Keep for potential future use
 
         signals = []
         close = data["close"]

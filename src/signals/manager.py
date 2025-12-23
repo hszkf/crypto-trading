@@ -228,7 +228,7 @@ class SignalManager:
         """Register callback for signal execution."""
         self._callbacks.append(callback)
 
-    def get_pending(self, symbol: Optional[str] = None) -> list[ManagedSignal]:
+    def get_pending(self, symbol: str | None = None) -> list[ManagedSignal]:
         """Get pending signals."""
         if symbol:
             managed = self._pending.get(symbol)
