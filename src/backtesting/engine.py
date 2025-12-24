@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class Trade:
     """Completed trade record."""
+
     symbol: str
     side: Side
     entry_time: datetime
@@ -36,6 +37,7 @@ class Trade:
 @dataclass
 class Position:
     """Open position during backtest."""
+
     symbol: str
     side: Side
     entry_time: datetime
@@ -49,6 +51,7 @@ class Position:
 @dataclass
 class BacktestResult:
     """Complete backtest results."""
+
     strategy_name: str
     symbol: str
     timeframe: str
@@ -68,10 +71,13 @@ class BacktestEngine:
     realistic fills, slippage, and commission handling.
     """
 
-    def __init__(self, initial_capital: float = 10000,
-                 commission_pct: float = 0.1,
-                 slippage_pct: float = 0.05,
-                 risk_per_trade: float = 0.02):
+    def __init__(
+        self,
+        initial_capital: float = 10000,
+        commission_pct: float = 0.1,
+        slippage_pct: float = 0.05,
+        risk_per_trade: float = 0.02,
+    ):
         """Initialize backtest engine.
 
         Args:
@@ -107,16 +113,16 @@ class BacktestEngine:
 
         # Determine warmup period based on strategy attributes
         warmup = 200  # Default warmup
-        if hasattr(strategy, 'trend_ema'):
+        if hasattr(strategy, "trend_ema"):
             warmup = strategy.trend_ema.period
-        elif hasattr(strategy, 'lookback'):
+        elif hasattr(strategy, "lookback"):
             warmup = max(strategy.lookback + 50, 100)
-        elif hasattr(strategy, 'bb'):
+        elif hasattr(strategy, "bb"):
             warmup = strategy.bb.period + 50
 
         for i in range(min(warmup, len(data) - 50), len(data)):
             # Get data up to current bar
-            current_data = data.iloc[:i+1]
+            current_data = data.iloc[: i + 1]
             current_bar = data.iloc[i]
             timestamp = data.index[i]
 
@@ -138,7 +144,7 @@ class BacktestEngine:
             self._close_position(data.iloc[-1]["close"], data.index[-1], "end_of_data")
 
         # Calculate metrics
-        equity_series = pd.Series(self._equity_curve, index=data.index[-len(self._equity_curve):])
+        equity_series = pd.Series(self._equity_curve, index=data.index[-len(self._equity_curve) :])
         metrics = calculate_metrics(self._trades, equity_series, self.initial_capital)
 
         return BacktestResult(
@@ -151,7 +157,7 @@ class BacktestEngine:
             final_capital=self._capital,
             trades=self._trades,
             equity_curve=equity_series,
-            metrics=metrics
+            metrics=metrics,
         )
 
     def _reset(self) -> None:
@@ -172,8 +178,9 @@ class BacktestEngine:
             equity += pnl
         self._equity_curve.append(equity)
 
-    def _check_entry(self, strategy: Strategy, data: pd.DataFrame,
-                     bar: pd.Series, timestamp: datetime) -> None:
+    def _check_entry(
+        self, strategy: Strategy, data: pd.DataFrame, bar: pd.Series, timestamp: datetime
+    ) -> None:
         """Check for entry signal."""
         signal = strategy.get_entry_signal(data)
         if not signal:
@@ -215,13 +222,14 @@ class BacktestEngine:
             quantity=quantity,
             stop_loss=signal.stop_loss,
             take_profit=signal.take_profit,
-            metadata=signal.metadata
+            metadata=signal.metadata,
         )
 
         logger.debug(f"Entry: {signal.side.value} {quantity:.4f} @ {entry_price:.2f}")
 
-    def _check_exit(self, strategy: Strategy, data: pd.DataFrame,
-                    bar: pd.Series, timestamp: datetime) -> bool:
+    def _check_exit(
+        self, strategy: Strategy, data: pd.DataFrame, bar: pd.Series, timestamp: datetime
+    ) -> bool:
         """Check for exit conditions. Returns True if position closed."""
         pos = self._position
 
@@ -251,8 +259,7 @@ class BacktestEngine:
 
         return False
 
-    def _close_position(self, exit_price: float, timestamp: datetime,
-                        reason: str) -> None:
+    def _close_position(self, exit_price: float, timestamp: datetime, reason: str) -> None:
         """Close current position and record trade."""
         pos = self._position
         if not pos:
@@ -291,16 +298,23 @@ class BacktestEngine:
             pnl=pnl,
             pnl_pct=pnl_pct,
             exit_reason=reason,
-            metadata=pos.metadata
+            metadata=pos.metadata,
         )
         self._trades.append(trade)
 
-        logger.debug(f"Exit: {pos.side.value} @ {adjusted_price:.2f}, PnL: {pnl:.2f} ({pnl_pct:.2f}%)")
+        logger.debug(
+            f"Exit: {pos.side.value} @ {adjusted_price:.2f}, PnL: {pnl:.2f} ({pnl_pct:.2f}%)"
+        )
 
         self._position = None
 
-    def optimize(self, strategy_class: type, data: pd.DataFrame,
-                 param_grid: dict, metric: str = "sharpe_ratio") -> dict:
+    def optimize(
+        self,
+        strategy_class: type,
+        data: pd.DataFrame,
+        param_grid: dict,
+        metric: str = "sharpe_ratio",
+    ) -> dict:
         """Optimize strategy parameters.
 
         Args:
@@ -315,7 +329,7 @@ class BacktestEngine:
         import itertools
 
         best_params = None
-        best_metric = float('-inf')
+        best_metric = float("-inf")
 
         # Generate all parameter combinations
         keys = param_grid.keys()
@@ -333,7 +347,7 @@ class BacktestEngine:
                 if metric_value > best_metric:
                     best_metric = metric_value
                     best_params = params.copy()
-                    best_params['_metric_value'] = metric_value
+                    best_params["_metric_value"] = metric_value
 
             except Exception as e:
                 logger.warning(f"Failed with params {params}: {e}")

@@ -86,8 +86,11 @@ class ConfluenceFilter(SignalFilter):
 class TimeFilter(SignalFilter):
     """Filter signals based on time of day."""
 
-    def __init__(self, allowed_hours: list[tuple[int, int]] = None,
-                 blocked_hours: list[tuple[int, int]] = None):
+    def __init__(
+        self,
+        allowed_hours: list[tuple[int, int]] = None,
+        blocked_hours: list[tuple[int, int]] = None,
+    ):
         """Initialize time filter.
 
         Args:
@@ -117,8 +120,7 @@ class TimeFilter(SignalFilter):
 class VolatilityFilter(SignalFilter):
     """Filter signals based on market volatility."""
 
-    def __init__(self, min_atr_pct: float = 0.5, max_atr_pct: float = 5.0,
-                 atr_period: int = 14):
+    def __init__(self, min_atr_pct: float = 0.5, max_atr_pct: float = 5.0, atr_period: int = 14):
         """Initialize volatility filter.
 
         Args:

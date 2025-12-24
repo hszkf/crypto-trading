@@ -85,8 +85,9 @@ class ATR(VolatilityIndicator):
 
         return atr
 
-    def stop_loss_price(self, data: pd.DataFrame, multiplier: float = 2.0,
-                        direction: str = "long") -> pd.Series:
+    def stop_loss_price(
+        self, data: pd.DataFrame, multiplier: float = 2.0, direction: str = "long"
+    ) -> pd.Series:
         """Calculate ATR-based stop loss price.
 
         Args:
@@ -102,9 +103,14 @@ class ATR(VolatilityIndicator):
         else:
             return close + (atr * multiplier)
 
-    def position_size(self, account_value: float, risk_percent: float,
-                      entry_price: float, atr_value: float,
-                      atr_multiplier: float = 2.0) -> float:
+    def position_size(
+        self,
+        account_value: float,
+        risk_percent: float,
+        entry_price: float,
+        atr_value: float,
+        atr_multiplier: float = 2.0,
+    ) -> float:
         """Calculate position size based on ATR stop.
 
         Args:
@@ -152,8 +158,9 @@ class KeltnerChannels(VolatilityIndicator):
 
         return upper, middle, lower
 
-    def squeeze_with_bb(self, data: pd.DataFrame, bb_period: int = 20,
-                        bb_std: float = 2.0) -> pd.Series:
+    def squeeze_with_bb(
+        self, data: pd.DataFrame, bb_period: int = 20, bb_std: float = 2.0
+    ) -> pd.Series:
         """Detect squeeze: BB inside Keltner Channels."""
         kc_upper, _, kc_lower = self.calculate_all(data)
         bb = BollingerBands(bb_period, bb_std)

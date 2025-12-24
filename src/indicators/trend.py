@@ -96,8 +96,16 @@ class ADX(TrendIndicator):
         plus_dm = np.where((up_move > down_move) & (up_move > 0), up_move, 0)
         minus_dm = np.where((down_move > up_move) & (down_move > 0), down_move, 0)
 
-        plus_di = 100 * pd.Series(plus_dm, index=data.index).ewm(span=self.period, adjust=False).mean() / atr
-        minus_di = 100 * pd.Series(minus_dm, index=data.index).ewm(span=self.period, adjust=False).mean() / atr
+        plus_di = (
+            100
+            * pd.Series(plus_dm, index=data.index).ewm(span=self.period, adjust=False).mean()
+            / atr
+        )
+        minus_di = (
+            100
+            * pd.Series(minus_dm, index=data.index).ewm(span=self.period, adjust=False).mean()
+            / atr
+        )
 
         # ADX
         dx = 100 * abs(plus_di - minus_di) / (plus_di + minus_di)
@@ -129,8 +137,16 @@ class ADX(TrendIndicator):
         plus_dm = np.where((up_move > down_move) & (up_move > 0), up_move, 0)
         minus_dm = np.where((down_move > up_move) & (down_move > 0), down_move, 0)
 
-        plus_di = 100 * pd.Series(plus_dm, index=data.index).ewm(span=self.period, adjust=False).mean() / atr
-        minus_di = 100 * pd.Series(minus_dm, index=data.index).ewm(span=self.period, adjust=False).mean() / atr
+        plus_di = (
+            100
+            * pd.Series(plus_dm, index=data.index).ewm(span=self.period, adjust=False).mean()
+            / atr
+        )
+        minus_di = (
+            100
+            * pd.Series(minus_dm, index=data.index).ewm(span=self.period, adjust=False).mean()
+            / atr
+        )
 
         dx = 100 * abs(plus_di - minus_di) / (plus_di + minus_di)
         adx = dx.ewm(span=self.period, adjust=False).mean()

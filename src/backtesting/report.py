@@ -19,11 +19,11 @@ class BacktestReport:
         m = r.metrics
 
         return f"""
-{'='*60}
+{"=" * 60}
 BACKTEST REPORT: {r.strategy_name}
-{'='*60}
+{"=" * 60}
 
-Period: {r.start_date.strftime('%Y-%m-%d')} to {r.end_date.strftime('%Y-%m-%d')}
+Period: {r.start_date.strftime("%Y-%m-%d")} to {r.end_date.strftime("%Y-%m-%d")}
 Symbol: {r.symbol}
 Timeframe: {r.timeframe}
 
@@ -58,7 +58,7 @@ Expectancy:       ${m.expectancy:,.2f}
 Expectancy Ratio: {m.expectancy_ratio:.2f}R
 Risk/Reward:      {m.risk_reward_ratio:.2f}
 
-{'='*60}
+{"=" * 60}
 """
 
     def trade_log(self) -> pd.DataFrame:
@@ -68,18 +68,20 @@ Risk/Reward:      {m.risk_reward_ratio:.2f}
 
         data = []
         for t in self.result.trades:
-            data.append({
-                "entry_time": t.entry_time,
-                "exit_time": t.exit_time,
-                "side": t.side.value,
-                "entry_price": t.entry_price,
-                "exit_price": t.exit_price,
-                "quantity": t.quantity,
-                "pnl": t.pnl,
-                "pnl_pct": t.pnl_pct,
-                "duration_hrs": t.duration,
-                "exit_reason": t.exit_reason
-            })
+            data.append(
+                {
+                    "entry_time": t.entry_time,
+                    "exit_time": t.exit_time,
+                    "side": t.side.value,
+                    "entry_price": t.entry_price,
+                    "exit_price": t.exit_price,
+                    "quantity": t.quantity,
+                    "pnl": t.pnl,
+                    "pnl_pct": t.pnl_pct,
+                    "duration_hrs": t.duration,
+                    "exit_reason": t.exit_reason,
+                }
+            )
 
         return pd.DataFrame(data)
 
@@ -90,19 +92,33 @@ Risk/Reward:      {m.risk_reward_ratio:.2f}
             return pd.DataFrame()
 
         # Resample to monthly
-        monthly = equity.resample('M').last()
+        monthly = equity.resample("M").last()
         monthly_returns = monthly.pct_change() * 100
 
         # Pivot to year x month format
-        df = pd.DataFrame({
-            'year': monthly_returns.index.year,
-            'month': monthly_returns.index.month,
-            'return': monthly_returns.values
-        })
+        df = pd.DataFrame(
+            {
+                "year": monthly_returns.index.year,
+                "month": monthly_returns.index.month,
+                "return": monthly_returns.values,
+            }
+        )
 
-        pivot = df.pivot(index='year', columns='month', values='return')
-        pivot.columns = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][:len(pivot.columns)]
+        pivot = df.pivot(index="year", columns="month", values="return")
+        pivot.columns = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ][: len(pivot.columns)]
 
         return pivot
 
@@ -115,14 +131,8 @@ Risk/Reward:      {m.risk_reward_ratio:.2f}
             "strategy": r.strategy_name,
             "symbol": r.symbol,
             "timeframe": r.timeframe,
-            "period": {
-                "start": r.start_date.isoformat(),
-                "end": r.end_date.isoformat()
-            },
-            "capital": {
-                "initial": r.initial_capital,
-                "final": r.final_capital
-            },
+            "period": {"start": r.start_date.isoformat(), "end": r.end_date.isoformat()},
+            "capital": {"initial": r.initial_capital, "final": r.final_capital},
             "metrics": {
                 "total_return": m.total_return,
                 "total_return_pct": m.total_return_pct,
@@ -134,7 +144,7 @@ Risk/Reward:      {m.risk_reward_ratio:.2f}
                 "win_rate": m.win_rate,
                 "profit_factor": m.profit_factor,
                 "expectancy": m.expectancy,
-                "risk_reward_ratio": m.risk_reward_ratio
+                "risk_reward_ratio": m.risk_reward_ratio,
             },
             "trades": [
                 {
@@ -144,10 +154,10 @@ Risk/Reward:      {m.risk_reward_ratio:.2f}
                     "entry_price": t.entry_price,
                     "exit_price": t.exit_price,
                     "pnl": t.pnl,
-                    "exit_reason": t.exit_reason
+                    "exit_reason": t.exit_reason,
                 }
                 for t in r.trades
-            ]
+            ],
         }
 
         return json.dumps(data, indent=2)
@@ -178,12 +188,14 @@ Risk/Reward:      {m.risk_reward_ratio:.2f}
                 current_start = idx
             if dd_end.get(idx, False) and current_start:
                 period_dd = drawdown[current_start:idx]
-                periods.append({
-                    "start": current_start,
-                    "end": idx,
-                    "max_dd": period_dd.min(),
-                    "duration_days": (idx - current_start).days
-                })
+                periods.append(
+                    {
+                        "start": current_start,
+                        "end": idx,
+                        "max_dd": period_dd.min(),
+                        "duration_days": (idx - current_start).days,
+                    }
+                )
                 current_start = None
 
         return pd.DataFrame(periods).sort_values("max_dd")
@@ -213,5 +225,5 @@ Risk/Reward:      {m.risk_reward_ratio:.2f}
         return {
             "max_win_streak": max_win,
             "max_loss_streak": max_loss,
-            "current_streak": current_win if wins[-1] else -current_loss
+            "current_streak": current_win if wins[-1] else -current_loss,
         }

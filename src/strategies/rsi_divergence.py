@@ -25,9 +25,14 @@ class RSIDivergenceStrategy(Strategy):
         - Enter on RSI crossing below 70
     """
 
-    def __init__(self, symbol: str, timeframe: str = "1h",
-                 rsi_period: int = 14, lookback: int = 20,
-                 atr_multiplier: float = 2.0):
+    def __init__(
+        self,
+        symbol: str,
+        timeframe: str = "1h",
+        rsi_period: int = 14,
+        lookback: int = 20,
+        atr_multiplier: float = 2.0,
+    ):
         super().__init__("RSI_Divergence", symbol, timeframe)
         self.rsi = RSI(rsi_period)
         self.atr = ATR(14)
@@ -37,16 +42,17 @@ class RSIDivergenceStrategy(Strategy):
     def _find_swing_points(self, series: pd.Series, window: int = 5) -> tuple[pd.Series, pd.Series]:
         """Find swing high and low points efficiently using rolling windows."""
         # Use rolling min/max for efficient swing detection
-        roll_min = series.rolling(window=2*window+1, center=True).min()
-        roll_max = series.rolling(window=2*window+1, center=True).max()
+        roll_min = series.rolling(window=2 * window + 1, center=True).min()
+        roll_max = series.rolling(window=2 * window + 1, center=True).max()
 
         swing_lows = series == roll_min
         swing_highs = series == roll_max
 
         return swing_lows, swing_highs
 
-    def _detect_divergences(self, price: pd.Series, rsi: pd.Series,
-                            lookback: int) -> tuple[pd.Series, pd.Series]:
+    def _detect_divergences(
+        self, price: pd.Series, rsi: pd.Series, lookback: int
+    ) -> tuple[pd.Series, pd.Series]:
         """Detect bullish and bearish divergences efficiently."""
         _n = len(price)  # Keep for potential debugging
         bull_div = pd.Series(False, index=price.index)
@@ -65,7 +71,7 @@ class RSIDivergenceStrategy(Strategy):
         # Detect bullish divergence: price lower low, RSI higher low
         for i in range(1, len(price_low_indices)):
             curr_idx = price_low_indices[i]
-            prev_idx = price_low_indices[i-1]
+            prev_idx = price_low_indices[i - 1]
 
             # Check if within lookback window
             if curr_idx - prev_idx > lookback:
@@ -85,7 +91,7 @@ class RSIDivergenceStrategy(Strategy):
         # Detect bearish divergence: price higher high, RSI lower high
         for i in range(1, len(price_high_indices)):
             curr_idx = price_high_indices[i]
-            prev_idx = price_high_indices[i-1]
+            prev_idx = price_high_indices[i - 1]
 
             # Check if within lookback window
             if curr_idx - prev_idx > lookback:
@@ -121,38 +127,38 @@ class RSIDivergenceStrategy(Strategy):
             timestamp = data.index[i] if isinstance(data.index[i], datetime) else datetime.now()
 
             # Bullish: divergence + RSI crossing above 30
-            if bull_div.iloc[i] and rsi.iloc[i] > 30 and rsi.iloc[i-1] <= 30:
-                signals.append(Signal(
-                    timestamp=timestamp,
-                    symbol=self.symbol,
-                    side=Side.LONG,
-                    signal_type=SignalType.ENTRY,
-                    price=close.iloc[i],
-                    stop_loss=close.iloc[i] - (atr.iloc[i] * self.atr_multiplier),
-                    take_profit=close.iloc[i] + (atr.iloc[i] * self.atr_multiplier * 2),
-                    metadata={"rsi": rsi.iloc[i], "divergence_type": "bullish"}
-                ))
+            if bull_div.iloc[i] and rsi.iloc[i] > 30 and rsi.iloc[i - 1] <= 30:
+                signals.append(
+                    Signal(
+                        timestamp=timestamp,
+                        symbol=self.symbol,
+                        side=Side.LONG,
+                        signal_type=SignalType.ENTRY,
+                        price=close.iloc[i],
+                        stop_loss=close.iloc[i] - (atr.iloc[i] * self.atr_multiplier),
+                        take_profit=close.iloc[i] + (atr.iloc[i] * self.atr_multiplier * 2),
+                        metadata={"rsi": rsi.iloc[i], "divergence_type": "bullish"},
+                    )
+                )
 
             # Bearish: divergence + RSI crossing below 70
-            if bear_div.iloc[i] and rsi.iloc[i] < 70 and rsi.iloc[i-1] >= 70:
-                signals.append(Signal(
-                    timestamp=timestamp,
-                    symbol=self.symbol,
-                    side=Side.SHORT,
-                    signal_type=SignalType.ENTRY,
-                    price=close.iloc[i],
-                    stop_loss=close.iloc[i] + (atr.iloc[i] * self.atr_multiplier),
-                    take_profit=close.iloc[i] - (atr.iloc[i] * self.atr_multiplier * 2),
-                    metadata={"rsi": rsi.iloc[i], "divergence_type": "bearish"}
-                ))
+            if bear_div.iloc[i] and rsi.iloc[i] < 70 and rsi.iloc[i - 1] >= 70:
+                signals.append(
+                    Signal(
+                        timestamp=timestamp,
+                        symbol=self.symbol,
+                        side=Side.SHORT,
+                        signal_type=SignalType.ENTRY,
+                        price=close.iloc[i],
+                        stop_loss=close.iloc[i] + (atr.iloc[i] * self.atr_multiplier),
+                        take_profit=close.iloc[i] - (atr.iloc[i] * self.atr_multiplier * 2),
+                        metadata={"rsi": rsi.iloc[i], "divergence_type": "bearish"},
+                    )
+                )
 
         return StrategyResult(
             signals=signals,
-            indicators={
-                "rsi": rsi,
-                "bullish_divergence": bull_div,
-                "bearish_divergence": bear_div
-            }
+            indicators={"rsi": rsi, "bullish_divergence": bull_div, "bearish_divergence": bear_div},
         )
 
     def get_entry_signal(self, data: pd.DataFrame) -> Signal | None:
@@ -178,7 +184,7 @@ class RSIDivergenceStrategy(Strategy):
                 price=close.iloc[-1],
                 stop_loss=close.iloc[-1] - (atr.iloc[-1] * self.atr_multiplier),
                 take_profit=close.iloc[-1] + (atr.iloc[-1] * self.atr_multiplier * 2),
-                metadata={"rsi": rsi.iloc[-1], "divergence_type": "bullish"}
+                metadata={"rsi": rsi.iloc[-1], "divergence_type": "bullish"},
             )
 
         # Bearish entry
@@ -191,7 +197,7 @@ class RSIDivergenceStrategy(Strategy):
                 price=close.iloc[-1],
                 stop_loss=close.iloc[-1] + (atr.iloc[-1] * self.atr_multiplier),
                 take_profit=close.iloc[-1] - (atr.iloc[-1] * self.atr_multiplier * 2),
-                metadata={"rsi": rsi.iloc[-1], "divergence_type": "bearish"}
+                metadata={"rsi": rsi.iloc[-1], "divergence_type": "bearish"},
             )
 
         return None
@@ -208,7 +214,7 @@ class RSIDivergenceStrategy(Strategy):
                 symbol=self.symbol,
                 side=Side.LONG,
                 signal_type=SignalType.EXIT,
-                price=close
+                price=close,
             )
 
         if position_side == Side.SHORT and rsi.iloc[-1] < 30:
@@ -217,7 +223,7 @@ class RSIDivergenceStrategy(Strategy):
                 symbol=self.symbol,
                 side=Side.SHORT,
                 signal_type=SignalType.EXIT,
-                price=close
+                price=close,
             )
 
         return None

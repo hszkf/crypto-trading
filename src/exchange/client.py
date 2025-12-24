@@ -41,8 +41,14 @@ class ExchangeClient(Exchange):
         "rejected": OrderStatus.REJECTED,
     }
 
-    def __init__(self, exchange_id: str, api_key: str = "", api_secret: str = "",
-                 testnet: bool = True, sandbox: bool = True):
+    def __init__(
+        self,
+        exchange_id: str,
+        api_key: str = "",
+        api_secret: str = "",
+        testnet: bool = True,
+        sandbox: bool = True,
+    ):
         super().__init__(exchange_id, api_key, api_secret, testnet)
         self.exchange_id = exchange_id
         self.sandbox = sandbox
@@ -75,7 +81,9 @@ class ExchangeClient(Exchange):
             # Test connection
             await self._client.load_markets()
             self._connected = True
-            logger.info(f"Connected to {self.exchange_id} ({'sandbox' if self.sandbox else 'live'})")
+            logger.info(
+                f"Connected to {self.exchange_id} ({'sandbox' if self.sandbox else 'live'})"
+            )
             return True
 
         except ImportError:
@@ -108,7 +116,7 @@ class ExchangeClient(Exchange):
             currency=currency,
             total=float(currency_balance.get("total", 0)),
             available=float(currency_balance.get("free", 0)),
-            locked=float(currency_balance.get("used", 0))
+            locked=float(currency_balance.get("used", 0)),
         )
 
     async def get_positions(self, symbol: str | None = None) -> list[Position]:
@@ -124,17 +132,21 @@ class ExchangeClient(Exchange):
 
             side = OrderSide.BUY if pos.get("side") == "long" else OrderSide.SELL
 
-            result.append(Position(
-                symbol=pos["symbol"],
-                side=side,
-                quantity=float(pos.get("contracts", 0)),
-                entry_price=float(pos.get("entryPrice", 0)),
-                current_price=float(pos.get("markPrice", 0)),
-                liquidation_price=float(pos.get("liquidationPrice", 0)) if pos.get("liquidationPrice") else None,
-                leverage=float(pos.get("leverage", 1)),
-                unrealized_pnl=float(pos.get("unrealizedPnl", 0)),
-                margin=float(pos.get("initialMargin", 0))
-            ))
+            result.append(
+                Position(
+                    symbol=pos["symbol"],
+                    side=side,
+                    quantity=float(pos.get("contracts", 0)),
+                    entry_price=float(pos.get("entryPrice", 0)),
+                    current_price=float(pos.get("markPrice", 0)),
+                    liquidation_price=float(pos.get("liquidationPrice", 0))
+                    if pos.get("liquidationPrice")
+                    else None,
+                    leverage=float(pos.get("leverage", 1)),
+                    unrealized_pnl=float(pos.get("unrealizedPnl", 0)),
+                    margin=float(pos.get("initialMargin", 0)),
+                )
+            )
 
         return result
 
@@ -145,9 +157,15 @@ class ExchangeClient(Exchange):
         orders = await self._client.fetch_open_orders(symbol)
         return [self._parse_order(o) for o in orders]
 
-    async def place_order(self, symbol: str, side: OrderSide, order_type: OrderType,
-                          quantity: float, price: float | None = None,
-                          stop_price: float | None = None) -> Order:
+    async def place_order(
+        self,
+        symbol: str,
+        side: OrderSide,
+        order_type: OrderType,
+        quantity: float,
+        price: float | None = None,
+        stop_price: float | None = None,
+    ) -> Order:
         """Place an order."""
         self._ensure_connected()
 
@@ -165,7 +183,7 @@ class ExchangeClient(Exchange):
                 side=ccxt_side,
                 amount=quantity,
                 price=price,
-                params=params
+                params=params,
             )
 
             logger.info(f"Order placed: {result['id']} {side.value} {quantity} {symbol}")
@@ -200,8 +218,7 @@ class ExchangeClient(Exchange):
             logger.error(f"Failed to cancel orders: {e}")
             return 0
 
-    async def get_ohlcv(self, symbol: str, timeframe: str = "1h",
-                        limit: int = 500) -> pd.DataFrame:
+    async def get_ohlcv(self, symbol: str, timeframe: str = "1h", limit: int = 500) -> pd.DataFrame:
         """Get OHLCV candle data."""
         self._ensure_connected()
 
@@ -227,7 +244,7 @@ class ExchangeClient(Exchange):
             "low": ticker["low"],
             "volume": ticker["baseVolume"],
             "change": ticker["percentage"],
-            "timestamp": ticker["timestamp"]
+            "timestamp": ticker["timestamp"],
         }
 
     async def get_orderbook(self, symbol: str, limit: int = 20) -> dict:
@@ -235,11 +252,7 @@ class ExchangeClient(Exchange):
         self._ensure_connected()
 
         ob = await self._client.fetch_order_book(symbol, limit)
-        return {
-            "bids": ob["bids"],
-            "asks": ob["asks"],
-            "timestamp": ob["timestamp"]
-        }
+        return {"bids": ob["bids"], "asks": ob["asks"], "timestamp": ob["timestamp"]}
 
     def _parse_order(self, data: dict) -> Order:
         """Parse ccxt order to internal Order."""
@@ -264,7 +277,9 @@ class ExchangeClient(Exchange):
             status=status,
             filled_quantity=float(data.get("filled", 0)),
             average_price=float(data.get("average", 0)) if data.get("average") else 0,
-            created_at=datetime.fromtimestamp(data["timestamp"] / 1000) if data.get("timestamp") else datetime.now()
+            created_at=datetime.fromtimestamp(data["timestamp"] / 1000)
+            if data.get("timestamp")
+            else datetime.now(),
         )
 
     async def __aenter__(self):

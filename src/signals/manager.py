@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 class SignalState(Enum):
     """Signal lifecycle state."""
+
     PENDING = "pending"
     EXECUTED = "executed"
     EXPIRED = "expired"
@@ -24,6 +25,7 @@ class SignalState(Enum):
 @dataclass
 class ManagedSignal:
     """Signal with management metadata."""
+
     signal: Signal
     state: SignalState = SignalState.PENDING
     entry_order: Order | None = None
@@ -53,9 +55,12 @@ class SignalManager:
     - Stop loss and take profit orders
     """
 
-    def __init__(self, exchange: Exchange | None = None,
-                 signal_expiry_minutes: int = 60,
-                 auto_execute: bool = False):
+    def __init__(
+        self,
+        exchange: Exchange | None = None,
+        signal_expiry_minutes: int = 60,
+        auto_execute: bool = False,
+    ):
         """Initialize signal manager.
 
         Args:
@@ -85,17 +90,16 @@ class SignalManager:
         if existing and existing.is_active:
             # Only replace if new signal has higher confidence
             if signal.confidence <= existing.signal.confidence:
-                logger.debug(f"Ignoring signal for {signal.symbol}, existing signal has higher confidence")
+                logger.debug(
+                    f"Ignoring signal for {signal.symbol}, existing signal has higher confidence"
+                )
                 return existing
 
             # Expire old signal
             existing.state = SignalState.EXPIRED
             self._history.append(existing)
 
-        managed = ManagedSignal(
-            signal=signal,
-            expiry=datetime.now() + self.signal_expiry
-        )
+        managed = ManagedSignal(signal=signal, expiry=datetime.now() + self.signal_expiry)
         self._pending[signal.symbol] = managed
 
         logger.info(f"New signal: {signal.side.value} {signal.symbol} @ {signal.price}")
@@ -106,8 +110,7 @@ class SignalManager:
         """Add multiple signals."""
         return [self.add_signal(s) for s in signals]
 
-    async def execute_signal(self, managed: ManagedSignal,
-                             position_size: float) -> bool:
+    async def execute_signal(self, managed: ManagedSignal, position_size: float) -> bool:
         """Execute a signal by placing orders.
 
         Args:
@@ -139,8 +142,11 @@ class SignalManager:
             if signal.stop_loss:
                 stop_side = OrderSide.SELL if signal.side == Side.LONG else OrderSide.BUY
                 stop_order = await self.exchange.place_order(
-                    signal.symbol, stop_side, OrderType.STOP_MARKET,
-                    position_size, stop_price=signal.stop_loss
+                    signal.symbol,
+                    stop_side,
+                    OrderType.STOP_MARKET,
+                    position_size,
+                    stop_price=signal.stop_loss,
                 )
                 managed.stop_order = stop_order
 
@@ -148,8 +154,11 @@ class SignalManager:
             if signal.take_profit:
                 tp_side = OrderSide.SELL if signal.side == Side.LONG else OrderSide.BUY
                 tp_order = await self.exchange.place_order(
-                    signal.symbol, tp_side, OrderType.TAKE_PROFIT_MARKET,
-                    position_size, stop_price=signal.take_profit
+                    signal.symbol,
+                    tp_side,
+                    OrderType.TAKE_PROFIT_MARKET,
+                    position_size,
+                    stop_price=signal.take_profit,
                 )
                 managed.take_profit_order = tp_order
 
@@ -169,7 +178,9 @@ class SignalManager:
             managed.state = SignalState.FAILED
             return False
 
-    async def execute_pending(self, position_sizer: Callable[[Signal], float]) -> list[ManagedSignal]:
+    async def execute_pending(
+        self, position_sizer: Callable[[Signal], float]
+    ) -> list[ManagedSignal]:
         """Execute all pending signals.
 
         Args:

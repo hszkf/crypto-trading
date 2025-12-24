@@ -9,6 +9,7 @@ import pandas as pd
 @dataclass
 class PerformanceMetrics:
     """Trading performance metrics."""
+
     # Returns
     total_return: float
     total_return_pct: float
@@ -45,9 +46,9 @@ class PerformanceMetrics:
     risk_reward_ratio: float
 
 
-def calculate_metrics(trades: list, equity_curve: pd.Series,
-                      initial_capital: float,
-                      risk_free_rate: float = 0.02) -> PerformanceMetrics:
+def calculate_metrics(
+    trades: list, equity_curve: pd.Series, initial_capital: float, risk_free_rate: float = 0.02
+) -> PerformanceMetrics:
     """Calculate comprehensive performance metrics.
 
     Args:
@@ -95,7 +96,9 @@ def calculate_metrics(trades: list, equity_curve: pd.Series,
     # Annualized return (assuming daily data)
     days = len(equity_curve)
     years = days / 252 if days > 0 else 1
-    annualized_return = ((final_capital / initial_capital) ** (1 / years) - 1) * 100 if years > 0 else 0
+    annualized_return = (
+        ((final_capital / initial_capital) ** (1 / years) - 1) * 100 if years > 0 else 0
+    )
 
     # Returns series for risk calculations
     returns = equity_curve.pct_change().dropna()
@@ -110,7 +113,9 @@ def calculate_metrics(trades: list, equity_curve: pd.Series,
     # Sortino ratio (downside deviation)
     downside_returns = returns[returns < 0]
     if len(downside_returns) > 1 and downside_returns.std() > 0:
-        sortino_ratio = (returns.mean() * 252 - risk_free_rate) / (downside_returns.std() * np.sqrt(252))
+        sortino_ratio = (returns.mean() * 252 - risk_free_rate) / (
+            downside_returns.std() * np.sqrt(252)
+        )
     else:
         sortino_ratio = 0
 
@@ -170,12 +175,13 @@ def calculate_metrics(trades: list, equity_curve: pd.Series,
         average_trade_duration=avg_duration,
         average_bars_in_trade=len(equity_curve) / total_trades if total_trades > 0 else 0,
         calmar_ratio=calmar_ratio,
-        risk_reward_ratio=risk_reward
+        risk_reward_ratio=risk_reward,
     )
 
 
-def _calculate_equity_only_metrics(equity_curve: pd.Series, initial_capital: float,
-                                    risk_free_rate: float = 0.02) -> PerformanceMetrics:
+def _calculate_equity_only_metrics(
+    equity_curve: pd.Series, initial_capital: float, risk_free_rate: float = 0.02
+) -> PerformanceMetrics:
     """Calculate metrics from equity curve only (no trades)."""
     final_capital = equity_curve.iloc[-1]
     total_return = final_capital - initial_capital
@@ -183,7 +189,9 @@ def _calculate_equity_only_metrics(equity_curve: pd.Series, initial_capital: flo
 
     days = len(equity_curve)
     years = days / 252 if days > 0 else 1
-    annualized_return = ((final_capital / initial_capital) ** (1 / years) - 1) * 100 if years > 0 else 0
+    annualized_return = (
+        ((final_capital / initial_capital) ** (1 / years) - 1) * 100 if years > 0 else 0
+    )
 
     returns = equity_curve.pct_change().dropna()
 
@@ -197,7 +205,9 @@ def _calculate_equity_only_metrics(equity_curve: pd.Series, initial_capital: flo
     # Sortino ratio
     downside_returns = returns[returns < 0]
     if len(downside_returns) > 1 and downside_returns.std() > 0:
-        sortino_ratio = (returns.mean() * 252 - risk_free_rate) / (downside_returns.std() * np.sqrt(252))
+        sortino_ratio = (returns.mean() * 252 - risk_free_rate) / (
+            downside_returns.std() * np.sqrt(252)
+        )
     else:
         sortino_ratio = 0
 
@@ -237,18 +247,34 @@ def _calculate_equity_only_metrics(equity_curve: pd.Series, initial_capital: flo
         average_trade_duration=0,
         average_bars_in_trade=0,
         calmar_ratio=calmar_ratio,
-        risk_reward_ratio=0
+        risk_reward_ratio=0,
     )
 
 
 def _empty_metrics() -> PerformanceMetrics:
     """Return empty metrics for no-trade scenarios."""
     return PerformanceMetrics(
-        total_return=0, total_return_pct=0, annualized_return=0,
-        sharpe_ratio=0, sortino_ratio=0, max_drawdown=0, max_drawdown_duration=0,
-        total_trades=0, winning_trades=0, losing_trades=0, win_rate=0,
-        profit_factor=0, average_win=0, average_loss=0, largest_win=0,
-        largest_loss=0, average_trade=0, expectancy=0, expectancy_ratio=0,
-        average_trade_duration=0, average_bars_in_trade=0,
-        calmar_ratio=0, risk_reward_ratio=0
+        total_return=0,
+        total_return_pct=0,
+        annualized_return=0,
+        sharpe_ratio=0,
+        sortino_ratio=0,
+        max_drawdown=0,
+        max_drawdown_duration=0,
+        total_trades=0,
+        winning_trades=0,
+        losing_trades=0,
+        win_rate=0,
+        profit_factor=0,
+        average_win=0,
+        average_loss=0,
+        largest_win=0,
+        largest_loss=0,
+        average_trade=0,
+        expectancy=0,
+        expectancy_ratio=0,
+        average_trade_duration=0,
+        average_bars_in_trade=0,
+        calmar_ratio=0,
+        risk_reward_ratio=0,
     )

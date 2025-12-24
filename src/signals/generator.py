@@ -16,8 +16,7 @@ class SignalGenerator:
     confluence filtering to improve signal quality.
     """
 
-    def __init__(self, strategies: list[Strategy] = None,
-                 min_confluence: int = 1):
+    def __init__(self, strategies: list[Strategy] = None, min_confluence: int = 1):
         """Initialize signal generator.
 
         Args:
@@ -125,8 +124,7 @@ class SignalGenerator:
 
         return base
 
-    def get_exit_signals(self, data: pd.DataFrame,
-                         positions: dict[str, Side]) -> list[Signal]:
+    def get_exit_signals(self, data: pd.DataFrame, positions: dict[str, Side]) -> list[Signal]:
         """Generate exit signals for open positions.
 
         Args:
@@ -164,4 +162,6 @@ class SignalGenerator:
         return [s for s in self.strategies if s.is_active]
 
     def __repr__(self) -> str:
-        return f"SignalGenerator(strategies={len(self.strategies)}, confluence={self.min_confluence})"
+        return (
+            f"SignalGenerator(strategies={len(self.strategies)}, confluence={self.min_confluence})"
+        )

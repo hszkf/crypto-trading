@@ -38,8 +38,8 @@ class RSI(MomentumIndicator):
         signals = pd.Series(0, index=data.index)
 
         for i in range(lookback, len(data)):
-            window_close = close.iloc[i-lookback:i+1]
-            window_rsi = rsi.iloc[i-lookback:i+1]
+            window_close = close.iloc[i - lookback : i + 1]
+            window_rsi = rsi.iloc[i - lookback : i + 1]
 
             # Bullish: price lower low, RSI higher low
             if window_close.iloc[-1] < window_close.min() * 1.01:
@@ -57,8 +57,9 @@ class RSI(MomentumIndicator):
 class StochasticRSI(MomentumIndicator):
     """Stochastic RSI - RSI applied to RSI values."""
 
-    def __init__(self, rsi_period: int = 14, stoch_period: int = 14,
-                 k_period: int = 3, d_period: int = 3):
+    def __init__(
+        self, rsi_period: int = 14, stoch_period: int = 14, k_period: int = 3, d_period: int = 3
+    ):
         super().__init__("StochRSI", rsi_period, 80, 20)
         self.stoch_period = stoch_period
         self.k_period = k_period
@@ -141,5 +142,5 @@ class WilliamsR(MomentumIndicator):
         values = self.calculate(data)
         signals = pd.Series(0, index=data.index)
         signals[values > self.overbought] = -1  # Above -20 = overbought
-        signals[values < self.oversold] = 1     # Below -80 = oversold
+        signals[values < self.oversold] = 1  # Below -80 = oversold
         return signals

@@ -18,8 +18,7 @@ class OBV(VolumeIndicator):
         close = data["close"]
         volume = data["volume"]
 
-        direction = np.where(close > close.shift(1), 1,
-                            np.where(close < close.shift(1), -1, 0))
+        direction = np.where(close > close.shift(1), 1, np.where(close < close.shift(1), -1, 0))
 
         obv = (volume * direction).cumsum()
         return pd.Series(obv, index=data.index)
@@ -30,7 +29,7 @@ class OBV(VolumeIndicator):
         obv_ma = obv.rolling(window=ma_period).mean()
 
         signals = pd.Series(0, index=data.index)
-        signals[obv > obv_ma] = 1   # Bullish accumulation
+        signals[obv > obv_ma] = 1  # Bullish accumulation
         signals[obv < obv_ma] = -1  # Bearish distribution
 
         return signals
@@ -42,8 +41,8 @@ class OBV(VolumeIndicator):
         signals = pd.Series(0, index=data.index)
 
         for i in range(lookback, len(data)):
-            price_window = close.iloc[i-lookback:i+1]
-            obv_window = obv.iloc[i-lookback:i+1]
+            price_window = close.iloc[i - lookback : i + 1]
+            obv_window = obv.iloc[i - lookback : i + 1]
 
             # Bullish: price lower, OBV higher
             if price_window.iloc[-1] < price_window.iloc[0]:
@@ -75,8 +74,9 @@ class VWAP(VolumeIndicator):
         vwap = cumulative_tp_vol / cumulative_vol
         return vwap
 
-    def calculate_with_bands(self, data: pd.DataFrame,
-                             std_mult: float = 2.0) -> tuple[pd.Series, pd.Series, pd.Series]:
+    def calculate_with_bands(
+        self, data: pd.DataFrame, std_mult: float = 2.0
+    ) -> tuple[pd.Series, pd.Series, pd.Series]:
         """Calculate VWAP with standard deviation bands.
 
         Returns:
@@ -104,7 +104,7 @@ class VWAP(VolumeIndicator):
         close = data["close"]
 
         signals = pd.Series(0, index=data.index)
-        signals[close > vwap] = 1   # Above VWAP = bullish
+        signals[close > vwap] = 1  # Above VWAP = bullish
         signals[close < vwap] = -1  # Below VWAP = bearish
 
         return signals
@@ -143,6 +143,6 @@ class MFI(VolumeIndicator):
         signals = pd.Series(0, index=data.index)
 
         signals[mfi > self.overbought] = -1  # Overbought
-        signals[mfi < self.oversold] = 1     # Oversold
+        signals[mfi < self.oversold] = 1  # Oversold
 
         return signals

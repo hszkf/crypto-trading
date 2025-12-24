@@ -59,7 +59,7 @@ class MomentumIndicator(Indicator):
         values = self.calculate(data)
         signals = pd.Series(0, index=data.index)
         signals[values > self.overbought] = -1  # Overbought = potential sell
-        signals[values < self.oversold] = 1     # Oversold = potential buy
+        signals[values < self.oversold] = 1  # Oversold = potential buy
         return signals
 
 

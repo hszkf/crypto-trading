@@ -24,10 +24,16 @@ class BollingerSqueezeStrategy(Strategy):
         - Or 2x band width from entry
     """
 
-    def __init__(self, symbol: str, timeframe: str = "1h",
-                 bb_period: int = 20, bb_std: float = 2.0,
-                 kc_period: int = 20, kc_multiplier: float = 1.5,
-                 volume_threshold: float = 1.5):
+    def __init__(
+        self,
+        symbol: str,
+        timeframe: str = "1h",
+        bb_period: int = 20,
+        bb_std: float = 2.0,
+        kc_period: int = 20,
+        kc_multiplier: float = 1.5,
+        volume_threshold: float = 1.5,
+    ):
         super().__init__("BB_Squeeze", symbol, timeframe)
         self.bb = BollingerBands(bb_period, bb_std)
         self.kc = KeltnerChannels(kc_period, 10, kc_multiplier)
@@ -66,35 +72,41 @@ class BollingerSqueezeStrategy(Strategy):
             else:
                 # Check for breakout after sufficient squeeze
                 if squeeze_count >= self.squeeze_bars:
-                    timestamp = data.index[i] if isinstance(data.index[i], datetime) else datetime.now()
+                    timestamp = (
+                        data.index[i] if isinstance(data.index[i], datetime) else datetime.now()
+                    )
 
                     # Bullish breakout
                     if close.iloc[i] > bb_upper.iloc[i] and vol_spike.iloc[i]:
                         band_width = bb_upper.iloc[i] - bb_lower.iloc[i]
-                        signals.append(Signal(
-                            timestamp=timestamp,
-                            symbol=self.symbol,
-                            side=Side.LONG,
-                            signal_type=SignalType.ENTRY,
-                            price=close.iloc[i],
-                            stop_loss=bb_middle.iloc[i],
-                            take_profit=close.iloc[i] + (band_width * 2),
-                            metadata={"squeeze_bars": squeeze_count, "band_width": band_width}
-                        ))
+                        signals.append(
+                            Signal(
+                                timestamp=timestamp,
+                                symbol=self.symbol,
+                                side=Side.LONG,
+                                signal_type=SignalType.ENTRY,
+                                price=close.iloc[i],
+                                stop_loss=bb_middle.iloc[i],
+                                take_profit=close.iloc[i] + (band_width * 2),
+                                metadata={"squeeze_bars": squeeze_count, "band_width": band_width},
+                            )
+                        )
 
                     # Bearish breakout
                     elif close.iloc[i] < bb_lower.iloc[i] and vol_spike.iloc[i]:
                         band_width = bb_upper.iloc[i] - bb_lower.iloc[i]
-                        signals.append(Signal(
-                            timestamp=timestamp,
-                            symbol=self.symbol,
-                            side=Side.SHORT,
-                            signal_type=SignalType.ENTRY,
-                            price=close.iloc[i],
-                            stop_loss=bb_middle.iloc[i],
-                            take_profit=close.iloc[i] - (band_width * 2),
-                            metadata={"squeeze_bars": squeeze_count, "band_width": band_width}
-                        ))
+                        signals.append(
+                            Signal(
+                                timestamp=timestamp,
+                                symbol=self.symbol,
+                                side=Side.SHORT,
+                                signal_type=SignalType.ENTRY,
+                                price=close.iloc[i],
+                                stop_loss=bb_middle.iloc[i],
+                                take_profit=close.iloc[i] - (band_width * 2),
+                                metadata={"squeeze_bars": squeeze_count, "band_width": band_width},
+                            )
+                        )
 
                 squeeze_count = 0
 
@@ -105,8 +117,8 @@ class BollingerSqueezeStrategy(Strategy):
                 "bb_middle": bb_middle,
                 "bb_lower": bb_lower,
                 "squeeze": squeeze,
-                "volume_spike": vol_spike
-            }
+                "volume_spike": vol_spike,
+            },
         )
 
     def get_entry_signal(self, data: pd.DataFrame) -> Signal | None:
@@ -122,7 +134,7 @@ class BollingerSqueezeStrategy(Strategy):
         timestamp = data.index[-1] if isinstance(data.index[-1], datetime) else datetime.now()
 
         # Count recent squeeze bars
-        squeeze_count = squeeze.iloc[-self.squeeze_bars-1:-1].sum()
+        squeeze_count = squeeze.iloc[-self.squeeze_bars - 1 : -1].sum()
 
         # Need sufficient squeeze before breakout
         if squeeze_count < self.squeeze_bars:
@@ -144,7 +156,7 @@ class BollingerSqueezeStrategy(Strategy):
                 price=close.iloc[-1],
                 stop_loss=bb_middle.iloc[-1],
                 take_profit=close.iloc[-1] + (band_width * 2),
-                metadata={"squeeze_bars": squeeze_count, "band_width": band_width}
+                metadata={"squeeze_bars": squeeze_count, "band_width": band_width},
             )
 
         # Bearish breakout
@@ -157,7 +169,7 @@ class BollingerSqueezeStrategy(Strategy):
                 price=close.iloc[-1],
                 stop_loss=bb_middle.iloc[-1],
                 take_profit=close.iloc[-1] - (band_width * 2),
-                metadata={"squeeze_bars": squeeze_count, "band_width": band_width}
+                metadata={"squeeze_bars": squeeze_count, "band_width": band_width},
             )
 
         return None
@@ -175,7 +187,7 @@ class BollingerSqueezeStrategy(Strategy):
                     symbol=self.symbol,
                     side=Side.LONG,
                     signal_type=SignalType.EXIT,
-                    price=close
+                    price=close,
                 )
 
         elif position_side == Side.SHORT:
@@ -185,7 +197,7 @@ class BollingerSqueezeStrategy(Strategy):
                     symbol=self.symbol,
                     side=Side.SHORT,
                     signal_type=SignalType.EXIT,
-                    price=close
+                    price=close,
                 )
 
         return None
