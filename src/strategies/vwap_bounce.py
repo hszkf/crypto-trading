@@ -37,11 +37,11 @@ class VWAPBounceStrategy(Strategy):
 
     def _is_bullish_candle(self, data: pd.DataFrame, idx: int) -> bool:
         """Check for bullish candle pattern."""
-        o, h, l, c = data["open"].iloc[idx], data["high"].iloc[idx], \
-                     data["low"].iloc[idx], data["close"].iloc[idx]
+        o, h, low, c = data["open"].iloc[idx], data["high"].iloc[idx], \
+                       data["low"].iloc[idx], data["close"].iloc[idx]
 
         body = abs(c - o)
-        lower_wick = min(o, c) - l
+        lower_wick = min(o, c) - low
         upper_wick = h - max(o, c)
 
         # Bullish engulfing or hammer-like
@@ -51,17 +51,17 @@ class VWAPBounceStrategy(Strategy):
                 if lower_wick > body * 2 and upper_wick < body * 0.5:
                     return True
                 # Strong bullish: body > 60% of range
-                if body / (h - l) > 0.6:
+                if body / (h - low) > 0.6:
                     return True
         return False
 
     def _is_bearish_candle(self, data: pd.DataFrame, idx: int) -> bool:
         """Check for bearish candle pattern."""
-        o, h, l, c = data["open"].iloc[idx], data["high"].iloc[idx], \
-                     data["low"].iloc[idx], data["close"].iloc[idx]
+        o, h, low, c = data["open"].iloc[idx], data["high"].iloc[idx], \
+                       data["low"].iloc[idx], data["close"].iloc[idx]
 
         body = abs(c - o)
-        lower_wick = min(o, c) - l
+        lower_wick = min(o, c) - low
         upper_wick = h - max(o, c)
 
         # Bearish engulfing or shooting star-like
@@ -71,7 +71,7 @@ class VWAPBounceStrategy(Strategy):
                 if upper_wick > body * 2 and lower_wick < body * 0.5:
                     return True
                 # Strong bearish: body > 60% of range
-                if body / (h - l) > 0.6:
+                if body / (h - low) > 0.6:
                     return True
         return False
 
@@ -194,7 +194,7 @@ class VWAPBounceStrategy(Strategy):
         atr = self.atr.calculate(data)
         timestamp = data.index[-1] if isinstance(data.index[-1], datetime) else datetime.now()
 
-        distance = abs(close - vwap.iloc[-1])
+        _distance = abs(close - vwap.iloc[-1])  # Keep for potential future use
 
         if position_side == Side.LONG:
             # Exit if price drops significantly below VWAP
