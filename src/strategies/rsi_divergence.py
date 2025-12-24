@@ -1,13 +1,12 @@
 """RSI Divergence Strategy."""
 
-from typing import Optional
 from datetime import datetime
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from .base import Strategy, StrategyResult, Signal, Side, SignalType
-from ..indicators import RSI, ATR
+from ..indicators import ATR, RSI
+from .base import Side, Signal, SignalType, Strategy, StrategyResult
 
 
 class RSIDivergenceStrategy(Strategy):
@@ -49,7 +48,7 @@ class RSIDivergenceStrategy(Strategy):
     def _detect_divergences(self, price: pd.Series, rsi: pd.Series,
                             lookback: int) -> tuple[pd.Series, pd.Series]:
         """Detect bullish and bearish divergences efficiently."""
-        n = len(price)
+        _n = len(price)  # Keep for potential debugging
         bull_div = pd.Series(False, index=price.index)
         bear_div = pd.Series(False, index=price.index)
 
@@ -156,7 +155,7 @@ class RSIDivergenceStrategy(Strategy):
             }
         )
 
-    def get_entry_signal(self, data: pd.DataFrame) -> Optional[Signal]:
+    def get_entry_signal(self, data: pd.DataFrame) -> Signal | None:
         """Check for entry signal on latest bar."""
         if not self.validate_data(data, min_rows=self.lookback + 20):
             return None
@@ -197,7 +196,7 @@ class RSIDivergenceStrategy(Strategy):
 
         return None
 
-    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Optional[Signal]:
+    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Signal | None:
         """Check for exit signal based on RSI extreme levels."""
         rsi = self.rsi.calculate(data)
         close = data["close"].iloc[-1]

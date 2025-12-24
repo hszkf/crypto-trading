@@ -109,7 +109,7 @@ class BollingerSqueezeStrategy(Strategy):
             }
         )
 
-    def get_entry_signal(self, data: pd.DataFrame) -> Optional[Signal]:
+    def get_entry_signal(self, data: pd.DataFrame) -> Signal | None:
         """Check for entry signal on latest bar."""
         if not self.validate_data(data, min_rows=50):
             return None
@@ -162,7 +162,7 @@ class BollingerSqueezeStrategy(Strategy):
 
         return None
 
-    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Optional[Signal]:
+    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Signal | None:
         """Check for exit signal - price returns to middle band."""
         bb_upper, bb_middle, bb_lower = self.bb.calculate_all(data)
         close = data["close"].iloc[-1]

@@ -1,12 +1,11 @@
 """EMA Crossover Strategy with RSI Filter."""
 
-from typing import Optional
 from datetime import datetime
 
 import pandas as pd
 
-from .base import Strategy, StrategyResult, Signal, Side, SignalType
-from ..indicators import EMA, RSI, ATR
+from ..indicators import ATR, EMA, RSI
+from .base import Side, Signal, SignalType, Strategy, StrategyResult
 
 
 class EMACrossoverStrategy(Strategy):
@@ -107,7 +106,7 @@ class EMACrossoverStrategy(Strategy):
             }
         )
 
-    def get_entry_signal(self, data: pd.DataFrame) -> Optional[Signal]:
+    def get_entry_signal(self, data: pd.DataFrame) -> Signal | None:
         """Check for entry signal on latest bar."""
         if not self.validate_data(data, min_rows=self.trend_ema.period + 10):
             return None
@@ -157,7 +156,7 @@ class EMACrossoverStrategy(Strategy):
 
         return None
 
-    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Optional[Signal]:
+    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Signal | None:
         """Check for exit signal."""
         fast = self.fast_ema.calculate(data)
         slow = self.slow_ema.calculate(data)

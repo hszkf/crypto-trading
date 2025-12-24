@@ -1,12 +1,11 @@
 """VWAP Bounce Strategy for Intraday Trading."""
 
-from typing import Optional
 from datetime import datetime
 
 import pandas as pd
 
-from .base import Strategy, StrategyResult, Signal, Side, SignalType
-from ..indicators import VWAP, RSI, ATR
+from ..indicators import ATR, RSI, VWAP
+from .base import Side, Signal, SignalType, Strategy, StrategyResult
 
 
 class VWAPBounceStrategy(Strategy):
@@ -145,7 +144,7 @@ class VWAPBounceStrategy(Strategy):
             indicators={"vwap": vwap, "rsi": rsi}
         )
 
-    def get_entry_signal(self, data: pd.DataFrame) -> Optional[Signal]:
+    def get_entry_signal(self, data: pd.DataFrame) -> Signal | None:
         """Check for entry signal on latest bar."""
         if not self.validate_data(data, min_rows=50):
             return None
@@ -188,7 +187,7 @@ class VWAPBounceStrategy(Strategy):
 
         return None
 
-    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Optional[Signal]:
+    def get_exit_signal(self, data: pd.DataFrame, position_side: Side) -> Signal | None:
         """Check for exit signal - price moves away from VWAP."""
         vwap = self.vwap.calculate(data)
         close = data["close"].iloc[-1]
