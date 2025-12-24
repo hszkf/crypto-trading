@@ -1,14 +1,24 @@
 """Unit tests for technical indicators."""
 
-import pytest
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pytest
 
 from src.indicators import (
-    SMA, EMA, MACD, ADX,
-    RSI, StochasticRSI, CCI, WilliamsR,
-    BollingerBands, ATR, KeltnerChannels,
-    OBV, VWAP, MFI
+    ADX,
+    ATR,
+    CCI,
+    EMA,
+    MACD,
+    MFI,
+    OBV,
+    RSI,
+    SMA,
+    VWAP,
+    BollingerBands,
+    KeltnerChannels,
+    StochasticRSI,
+    WilliamsR,
 )
 
 

@@ -12,7 +12,6 @@ This script demonstrates how to use the trading system components:
 
 # import asyncio  # TODO: Uncomment when enabling Binance live trading
 import logging
-from datetime import datetime, timedelta
 
 import numpy as np
 import pandas as pd
@@ -128,7 +127,7 @@ def demo_indicators():
     bb_upper, bb_middle, bb_lower = bb.calculate_all(data)
     atr_value = atr.calculate(data).iloc[-1]
 
-    print(f"\nBollinger Bands:")
+    print("\nBollinger Bands:")
     print(f"  Upper:  ${bb_upper.iloc[-1]:,.2f}")
     print(f"  Middle: ${bb_middle.iloc[-1]:,.2f}")
     print(f"  Lower:  ${bb_lower.iloc[-1]:,.2f}")
@@ -172,7 +171,7 @@ def demo_strategies():
         # Show latest signal if exists
         if result.signals:
             latest = result.signals[-1]
-            print(f"\nLatest Signal:")
+            print("\nLatest Signal:")
             print(f"  Side: {latest.side.value.upper()}")
             print(f"  Price: ${latest.price:,.2f}")
             if latest.stop_loss:
@@ -234,9 +233,9 @@ def demo_backtest():
     )
 
     print(f"\nStrategy: {strategy.name}")
-    print(f"Initial Capital: $10,000")
-    print(f"Risk per Trade: 2%")
-    print(f"Commission: 0.1%")
+    print("Initial Capital: $10,000")
+    print("Risk per Trade: 2%")
+    print("Commission: 0.1%")
 
     for scenario_name, data in scenarios.items():
         print(f"\n--- {scenario_name} Market ---")

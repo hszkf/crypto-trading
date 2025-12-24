@@ -1,12 +1,12 @@
 """Integration tests for full trading pipeline."""
 
-import pytest
 import pandas as pd
+import pytest
 
-from src.indicators import RSI, EMA, BollingerBands
-from src.strategies import EMACrossoverStrategy, BollingerSqueezeStrategy
-from src.signals import SignalGenerator, SignalManager
 from src.backtesting import BacktestEngine, BacktestReport
+from src.indicators import EMA, RSI, BollingerBands
+from src.signals import SignalGenerator, SignalManager
+from src.strategies import BollingerSqueezeStrategy, EMACrossoverStrategy
 
 
 class TestIndicatorChaining:

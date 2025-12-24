@@ -1,14 +1,17 @@
 """Unit tests for trading strategies."""
 
-import pytest
 import pandas as pd
+import pytest
 
 from src.strategies import (
-    Strategy, StrategyResult, Signal, Side, SignalType,
-    EMACrossoverStrategy,
     BollingerSqueezeStrategy,
+    EMACrossoverStrategy,
     RSIDivergenceStrategy,
-    VWAPBounceStrategy
+    Side,
+    Signal,
+    SignalType,
+    StrategyResult,
+    VWAPBounceStrategy,
 )
 
 

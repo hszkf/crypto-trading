@@ -1,10 +1,9 @@
 """Unit tests for backtesting engine."""
 
-import pytest
 import pandas as pd
-import numpy as np
+import pytest
 
-from src.backtesting import BacktestEngine, PerformanceMetrics, calculate_metrics, BacktestReport
+from src.backtesting import BacktestEngine, BacktestReport, calculate_metrics
 from src.strategies import EMACrossoverStrategy, Side
 
 
@@ -106,8 +105,9 @@ class TestPerformanceMetrics:
 
     def test_win_rate_calculation(self):
         """Test win rate is calculated correctly."""
-        from src.backtesting.engine import Trade
         from datetime import datetime
+
+        from src.backtesting.engine import Trade
 
         trades = [
             Trade("BTC", Side.LONG, datetime.now(), 100, datetime.now(), 110, 1, 10, 10, "tp"),
@@ -123,8 +123,9 @@ class TestPerformanceMetrics:
 
     def test_profit_factor_calculation(self):
         """Test profit factor calculation."""
-        from src.backtesting.engine import Trade
         from datetime import datetime
+
+        from src.backtesting.engine import Trade
 
         trades = [
             Trade("BTC", Side.LONG, datetime.now(), 100, datetime.now(), 110, 1, 100, 10, "tp"),
