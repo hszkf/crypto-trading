@@ -10,23 +10,25 @@ This script demonstrates how to use the trading system components:
 5. Live trading (paper mode)
 """
 
-import asyncio
+# import asyncio  # TODO: Uncomment when enabling Binance live trading
 import logging
 from datetime import datetime, timedelta
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
-from src.indicators import RSI, EMA, MACD, BollingerBands, ATR, VWAP
+from src.backtesting import BacktestEngine, BacktestReport
+from src.indicators import ATR, EMA, MACD, RSI, VWAP, BollingerBands
+from src.signals import SignalGenerator  # SignalManager - uncomment for live trading
 from src.strategies import (
-    EMACrossoverStrategy,
     BollingerSqueezeStrategy,
+    EMACrossoverStrategy,
     RSIDivergenceStrategy,
     VWAPBounceStrategy,
 )
-from src.signals import SignalGenerator, SignalManager
-from src.backtesting import BacktestEngine, BacktestReport
-from config.settings import Settings, TradingMode
+
+# TODO: Uncomment when enabling Binance live trading
+# from config.settings import Settings, TradingMode
 
 # Configure logging
 logging.basicConfig(
@@ -317,62 +319,63 @@ def demo_strategy_comparison():
     print(f"\nBest Risk-Adjusted Strategy: {best[0]}")
 
 
-async def demo_live_trading():
-    """Demonstrate live trading setup (paper mode)."""
-    print("\n" + "="*60)
-    print("LIVE TRADING DEMO (Paper Mode)")
-    print("="*60)
-
-    settings = Settings.from_env()
-
-    print(f"\nTrading Mode: {settings.mode.value}")
-    print(f"Exchange: {settings.exchange.exchange_id}")
-    print(f"Testnet: {settings.exchange.testnet}")
-
-    print("\nRisk Settings:")
-    print(f"  Max Position Size: {settings.risk.max_position_size_pct*100}%")
-    print(f"  Risk per Trade: {settings.risk.risk_per_trade_pct*100}%")
-    print(f"  Max Daily Loss: {settings.risk.max_daily_loss_pct*100}%")
-    print(f"  Max Drawdown: {settings.risk.max_drawdown_pct*100}%")
-
-    # Simulate signal generation cycle
-    print("\n--- Signal Generation Cycle ---")
-
-    data = generate_sample_data(500)
-
-    strategies = [
-        EMACrossoverStrategy("BTC/USDT", "1h"),
-        BollingerSqueezeStrategy("BTC/USDT", "1h"),
-    ]
-
-    generator = SignalGenerator(strategies, min_confluence=1)
-    manager = SignalManager(signal_expiry_minutes=60)
-
-    # Generate signals
-    signals = generator.generate(data)
-
-    if signals:
-        for signal in signals[:3]:  # Show first 3
-            managed = manager.add_signal(signal)
-            print(f"\nNew Signal Queued:")
-            print(f"  Symbol: {signal.symbol}")
-            print(f"  Side: {signal.side.value.upper()}")
-            print(f"  Price: ${signal.price:,.2f}")
-            print(f"  Stop Loss: ${signal.stop_loss:,.2f}" if signal.stop_loss else "")
-            print(f"  Take Profit: ${signal.take_profit:,.2f}" if signal.take_profit else "")
-            print(f"  Expires: {managed.expiry}")
-    else:
-        print("\nNo signals generated in current cycle")
-
-    print(f"\nPending Signals: {manager.pending_count}")
-
-    # Note about live trading
-    print("\n" + "-"*40)
-    print("NOTE: To enable live trading:")
-    print("1. Set EXCHANGE_API_KEY and EXCHANGE_API_SECRET in .env")
-    print("2. Set TRADING_MODE=live (use paper first!)")
-    print("3. Set EXCHANGE_TESTNET=false for real trading")
-    print("-"*40)
+# TODO: Uncomment when Binance API keys are configured
+# async def demo_live_trading():
+#     """Demonstrate live trading setup (paper mode)."""
+#     print("\n" + "="*60)
+#     print("LIVE TRADING DEMO (Paper Mode)")
+#     print("="*60)
+#
+#     settings = Settings.from_env()
+#
+#     print(f"\nTrading Mode: {settings.mode.value}")
+#     print(f"Exchange: {settings.exchange.exchange_id}")
+#     print(f"Testnet: {settings.exchange.testnet}")
+#
+#     print("\nRisk Settings:")
+#     print(f"  Max Position Size: {settings.risk.max_position_size_pct*100}%")
+#     print(f"  Risk per Trade: {settings.risk.risk_per_trade_pct*100}%")
+#     print(f"  Max Daily Loss: {settings.risk.max_daily_loss_pct*100}%")
+#     print(f"  Max Drawdown: {settings.risk.max_drawdown_pct*100}%")
+#
+#     # Simulate signal generation cycle
+#     print("\n--- Signal Generation Cycle ---")
+#
+#     data = generate_sample_data(500)
+#
+#     strategies = [
+#         EMACrossoverStrategy("BTC/USDT", "1h"),
+#         BollingerSqueezeStrategy("BTC/USDT", "1h"),
+#     ]
+#
+#     generator = SignalGenerator(strategies, min_confluence=1)
+#     manager = SignalManager(signal_expiry_minutes=60)
+#
+#     # Generate signals
+#     signals = generator.generate(data)
+#
+#     if signals:
+#         for signal in signals[:3]:  # Show first 3
+#             managed = manager.add_signal(signal)
+#             print(f"\nNew Signal Queued:")
+#             print(f"  Symbol: {signal.symbol}")
+#             print(f"  Side: {signal.side.value.upper()}")
+#             print(f"  Price: ${signal.price:,.2f}")
+#             print(f"  Stop Loss: ${signal.stop_loss:,.2f}" if signal.stop_loss else "")
+#             print(f"  Take Profit: ${signal.take_profit:,.2f}" if signal.take_profit else "")
+#             print(f"  Expires: {managed.expiry}")
+#     else:
+#         print("\nNo signals generated in current cycle")
+#
+#     print(f"\nPending Signals: {manager.pending_count}")
+#
+#     # Note about live trading
+#     print("\n" + "-"*40)
+#     print("NOTE: To enable live trading:")
+#     print("1. Set EXCHANGE_API_KEY and EXCHANGE_API_SECRET in .env")
+#     print("2. Set TRADING_MODE=live (use paper first!)")
+#     print("3. Set EXCHANGE_TESTNET=false for real trading")
+#     print("-"*40)
 
 
 def main():
@@ -390,8 +393,8 @@ def main():
     demo_full_report()
     demo_strategy_comparison()
 
-    # Run async demo
-    asyncio.run(demo_live_trading())
+    # TODO: Uncomment when Binance API keys are configured
+    # asyncio.run(demo_live_trading())
 
     print("\n" + "="*60)
     print("Demo Complete!")
